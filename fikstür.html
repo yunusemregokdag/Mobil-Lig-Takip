@@ -57,6 +57,7 @@
     <script>
         // Verilerimizi burada tutacağız
         let fiksturVerileri = [];
+        let takimListesi = [];
 
         // Sayfa yüklendiğinde kayıtlı verileri yükle
         document.addEventListener('DOMContentLoaded', function() {
@@ -67,19 +68,25 @@
         // LocalStorage'dan verileri yükle
         function verileriYukle() {
             const kayitliVeriler = localStorage.getItem('mobilLigVerileri');
+            const kayitliTakimlar = localStorage.getItem('mobilLigTakimlar');
+            
             if (kayitliVeriler) {
                 fiksturVerileri = JSON.parse(kayitliVeriler);
                 console.log('Veriler yüklendi:', fiksturVerileri);
+            }
+            if (kayitliTakimlar) {
+                takimListesi = JSON.parse(kayitliTakimlar);
             }
         }
 
         // Verileri LocalStorage'a kaydet
         function verileriKaydet() {
             localStorage.setItem('mobilLigVerileri', JSON.stringify(fiksturVerileri));
-            alert('✅ Veriler kaydedildi! Sayfayı yenileyip test edebilirsin.');
+            localStorage.setItem('mobilLigTakimlar', JSON.stringify(takimListesi));
+            console.log('Veriler kaydedildi:', fiksturVerileri);
         }
 
-        // Takım ekleme fonksiyonu
+        // Takım ekleme fonksiyonu - DÜZELTİLMİŞ VERSİYON
         function takimEkle() {
             const takimAdi = document.getElementById('takimAdi').value.trim();
             
@@ -88,20 +95,31 @@
                 return;
             }
 
-            // Yeni takım için boş maçlar oluştur
-            fiksturVerileri.forEach(function(mac) {
-                if (mac.evSahibi && mac.deplasman) {
-                    // Ev sahibi olarak yeni takım ekle
-                    fiksturVerileri.push({
+            // Takım zaten var mı kontrol et
+            if (takimListesi.includes(takimAdi)) {
+                alert('Bu takım zaten ekli!');
+                return;
+            }
+
+            // Yeni takımı listeye ekle
+            takimListesi.push(takimAdi);
+
+            // Mevcut takımlarla maçlar oluştur
+            const yeniMaclar = [];
+            
+            takimListesi.forEach(function(takim) {
+                if (takim !== takimAdi) {
+                    // Ev sahibi olarak yeni takım
+                    yeniMaclar.push({
                         evSahibi: takimAdi,
                         evSkor: 0,
-                        deplasman: mac.evSahibi,
+                        deplasman: takim,
                         depSkor: 0
                     });
                     
-                    // Deplasman olarak yeni takım ekle
-                    fiksturVerileri.push({
-                        evSahibi: mac.evSahibi,
+                    // Deplasman olarak yeni takım
+                    yeniMaclar.push({
+                        evSahibi: takim,
                         evSkor: 0,
                         deplasman: takimAdi,
                         depSkor: 0
@@ -109,9 +127,9 @@
                 }
             });
 
-            // Takımlar arasında kendi kendine maç ekleme (en az 2 takım varsa)
-            if (fiksturVerileri.length > 0) {
-                fiksturVerileri.push({
+            // Kendi kendine maç (ilk takım ise)
+            if (takimListesi.length === 1) {
+                yeniMaclar.push({
                     evSahibi: takimAdi,
                     evSkor: 0,
                     deplasman: takimAdi,
@@ -119,9 +137,14 @@
                 });
             }
 
+            // Yeni maçları ana listeye ekle
+            fiksturVerileri = fiksturVerileri.concat(yeniMaclar);
+
             document.getElementById('takimAdi').value = '';
             tabloyuGuncelle();
-            verileriKaydet(); // Otomatik kaydet
+            verileriKaydet();
+            
+            alert('✅ ' + takimAdi + ' takımı eklendi!');
         }
 
         // Skor güncelleme fonksiyonu
@@ -131,7 +154,7 @@
             } else {
                 fiksturVerileri[index].depSkor = parseInt(deger) || 0;
             }
-            verileriKaydet(); // Otomatik kaydet
+            verileriKaydet();
         }
 
         // Maç silme fonksiyonu
@@ -139,7 +162,7 @@
             if (confirm('Bu maçı silmek istediğinizden emin misiniz?')) {
                 fiksturVerileri.splice(index, 1);
                 tabloyuGuncelle();
-                verileriKaydet(); // Otomatik kaydet
+                verileriKaydet();
             }
         }
 
@@ -147,6 +170,11 @@
         function tabloyuGuncelle() {
             const tabloBody = document.getElementById('tabloBody');
             tabloBody.innerHTML = '';
+
+            if (fiksturVerileri.length === 0) {
+                tabloBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">Henüz maç eklenmemiş</td></tr>';
+                return;
+            }
 
             fiksturVerileri.forEach(function(mac, index) {
                 const satir = document.createElement('tr');
@@ -174,16 +202,16 @@
         function verileriTemizle() {
             if (confirm('TÜM verileri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
                 localStorage.removeItem('mobilLigVerileri');
+                localStorage.removeItem('mobilLigTakimlar');
                 fiksturVerileri = [];
+                takimListesi = [];
                 tabloyuGuncelle();
                 alert('🗑️ Tüm veriler temizlendi!');
             }
         }
 
-        // Sayfa kapanırken otomatik kaydet
-        window.addEventListener('beforeunload', function() {
-            verileriKaydet();
-        });
+        // Her değişiklikte otomatik kaydet
+        window.addEventListener('beforeunload', verileriKaydet);
     </script>
 </body>
 </html>
