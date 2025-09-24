@@ -3,215 +3,577 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobil Lig Takip</title>
+    <title>📱 Mobil Lig Takip</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 800px; margin: 0 auto; }
-        h1 { text-align: center; margin-bottom: 20px; color: #333; }
-        
-        .takim-ekle { background: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-        .takim-ekle input { padding: 10px; width: 70%; margin-right: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        .takim-ekle button { padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        
-        .fikstur-tablosu { background: white; border-radius: 10px; overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background: #f8f9fa; font-weight: bold; }
-        
-        .skor-input { width: 40px; padding: 5px; text-align: center; border: 1px solid #ddd; border-radius: 3px; }
-        
-        .kaydet-btn { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        .sil-btn { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .header input {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+        }
+        .header input::placeholder {
+            color: rgba(255,255,255,0.8);
+        }
+        .controls {
+            padding: 15px;
+            background: #f8f9fa;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            touch-action: manipulation;
+            transition: all 0.2s ease;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+        .btn.danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        .btn.success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        .section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .section-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+        .team-input, .match-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .team-input input, .match-input input, .match-input select {
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            flex: 1;
+        }
+        .match-input input[type="number"] {
+            width: 60px;
+            text-align: center;
+            flex: none;
+        }
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .standings-table th {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 12px 4px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        .standings-table td {
+            padding: 10px 4px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        .team-name {
+            text-align: left;
+            font-weight: bold;
+            padding-left: 8px;
+        }
+        .position {
+            font-weight: bold;
+            color: #667eea;
+        }
+        .points {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+        .toggle {
+            display: none;
+        }
+        .toggle:checked + .toggle-label + .toggle-content {
+            display: block;
+        }
+        .toggle-label {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            display: block;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .toggle-content {
+            display: none;
+        }
+        .export-section {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .csv-output {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏆 Mobil Lig Takip</h1>
-        
-        <div class="takim-ekle">
-            <input type="text" id="takimAdi" placeholder="Takım adı girin...">
-            <button onclick="takimEkle()">Takım Ekle</button>
+        <div class="header">
+            <h1>⚽ Mobil Lig Takip</h1>
+            <input type="text" id="leagueName" placeholder="Lig Adınızı Yazın" value="Süper Lig 2025">
         </div>
         
-        <div class="fikstur-tablosu">
-            <table id="fiksturTablosu">
+        <div class="controls">
+            <button class="btn success" onclick="addTeam()">➕ Takım Ekle</button>
+            <button class="btn" onclick="addMatch()">⚽ Maç Ekle</button>
+            <button class="btn danger" onclick="clearAll()">🗑️ Temizle</button>
+            <button class="btn" onclick="saveData()">💾 Yedekle</button>
+            <button class="btn" onclick="loadData()">📂 Geri Yükle</button>
+            <button class="btn" onclick="exportToCSV()">📊 Dışa Aktar</button>
+        </div>
+
+        <!-- Takımlar Bölümü -->
+        <input type="checkbox" id="toggle-teams" class="toggle">
+        <label for="toggle-teams" class="toggle-label">🏆 Takımlar Yönetimi</label>
+        <div class="toggle-content">
+            <div class="section">
+                <div id="teamsContainer"></div>
+            </div>
+        </div>
+
+        <!-- Maçlar Bölümü -->
+        <input type="checkbox" id="toggle-matches" class="toggle">
+        <label for="toggle-matches" class="toggle-label">⚽ Maç Sonuçları</label>
+        <div class="toggle-content">
+            <div class="section">
+                <div id="matchesContainer"></div>
+                <div class="stats-grid" id="statsContainer"></div>
+            </div>
+        </div>
+
+        <!-- Puan Durumu -->
+        <div class="section">
+            <div class="section-title">📊 Puan Durumu</div>
+            <table class="standings-table" id="standingsTable">
                 <thead>
                     <tr>
-                        <th>Ev Sahibi</th>
-                        <th>Skor</th>
-                        <th>Deplasman</th>
-                        <th>İşlem</th>
+                        <th>Sıra</th>
+                        <th>Takım</th>
+                        <th>O</th>
+                        <th>G</th>
+                        <th>B</th>
+                        <th>M</th>
+                        <th>A</th>
+                        <th>Y</th>
+                        <th>Av</th>
+                        <th>P</th>
                     </tr>
                 </thead>
-                <tbody id="tabloBody">
-                    <!-- Tablo verileri buraya gelecek -->
-                </tbody>
+                <tbody id="standingsBody"></tbody>
             </table>
         </div>
-        
-        <button class="kaydet-btn" onclick="verileriKaydet()">✅ Verileri Kaydet</button>
-        <button class="kaydet-btn" onclick="verileriTemizle()" style="background: #dc3545;">🗑️ Tüm Verileri Temizle</button>
+
+        <!-- Export -->
+        <div class="export-section" style="display: none;">
+            <h3>📋 Veri Aktarımı</h3>
+            <div class="csv-output" id="csvOutput"></div>
+        </div>
     </div>
 
     <script>
-        // Verilerimizi burada tutacağız
-        let fiksturVerileri = [];
-        let takimListesi = [];
+        let teams = ["Aybala United", "Kara Gergedan 🦏 FK", "Benimkide Boğa FK"];
+        let matches = [];
 
-        // Sayfa yüklendiğinde kayıtlı verileri yükle
-        document.addEventListener('DOMContentLoaded', function() {
-            verileriYukle();
-            tabloyuGuncelle();
-        });
-
-        // LocalStorage'dan verileri yükle
-        function verileriYukle() {
-            const kayitliVeriler = localStorage.getItem('mobilLigVerileri');
-            const kayitliTakimlar = localStorage.getItem('mobilLigTakimlar');
+        // Otomatik kaydetme ve yükleme fonksiyonları
+        function autoSave() {
+            const data = {
+                leagueName: document.getElementById('leagueName').value,
+                teams: teams,
+                matches: matches,
+                lastSaved: new Date().toLocaleString('tr-TR')
+            };
             
-            if (kayitliVeriler) {
-                fiksturVerileri = JSON.parse(kayitliVeriler);
-                console.log('Veriler yüklendi:', fiksturVerileri);
-            }
-            if (kayitliTakimlar) {
-                takimListesi = JSON.parse(kayitliTakimlar);
+            try {
+                const dataStr = JSON.stringify(data);
+                // Tarayıcının kendi depolama alanını kullan
+                const storage = window.localStorage || window.sessionStorage;
+                storage.setItem('ligVerileri', dataStr);
+                console.log('✅ Otomatik kayıt yapıldı');
+            } catch (error) {
+                console.log('❌ Otomatik kayıt başarısız');
             }
         }
 
-        // Verileri LocalStorage'a kaydet
-        function verileriKaydet() {
-            localStorage.setItem('mobilLigVerileri', JSON.stringify(fiksturVerileri));
-            localStorage.setItem('mobilLigTakimlar', JSON.stringify(takimListesi));
-            console.log('Veriler kaydedildi:', fiksturVerileri);
-        }
-
-        // Takım ekleme fonksiyonu - DÜZELTİLMİŞ VERSİYON
-        function takimEkle() {
-            const takimAdi = document.getElementById('takimAdi').value.trim();
-            
-            if (takimAdi === '') {
-                alert('Lütfen takım adı girin!');
-                return;
-            }
-
-            // Takım zaten var mı kontrol et
-            if (takimListesi.includes(takimAdi)) {
-                alert('Bu takım zaten ekli!');
-                return;
-            }
-
-            // Yeni takımı listeye ekle
-            takimListesi.push(takimAdi);
-
-            // Mevcut takımlarla maçlar oluştur
-            const yeniMaclar = [];
-            
-            takimListesi.forEach(function(takim) {
-                if (takim !== takimAdi) {
-                    // Ev sahibi olarak yeni takım
-                    yeniMaclar.push({
-                        evSahibi: takimAdi,
-                        evSkor: 0,
-                        deplasman: takim,
-                        depSkor: 0
-                    });
+        function autoLoad() {
+            try {
+                const storage = window.localStorage || window.sessionStorage;
+                const dataStr = storage.getItem('ligVerileri');
+                if (dataStr) {
+                    const data = JSON.parse(dataStr);
+                    document.getElementById('leagueName').value = data.leagueName || 'Süper Lig 2025';
+                    teams = data.teams || ["Aybala United", "Kara Gergedan 🦏 FK", "Benimkide Boğa FK"];
+                    matches = data.matches || [];
                     
-                    // Deplasman olarak yeni takım
-                    yeniMaclar.push({
-                        evSahibi: takim,
-                        evSkor: 0,
-                        deplasman: takimAdi,
-                        depSkor: 0
-                    });
+                    // Son kayıt tarihini göster
+                    if (data.lastSaved) {
+                        console.log(`📅 Son kayıt: ${data.lastSaved}`);
+                    }
+                    
+                    updateTeamsDisplay();
+                    updateMatchesDisplay();
+                    updateStandings();
+                    return true;
+                }
+            } catch (error) {
+                console.log('❌ Otomatik yükleme başarısız');
+            }
+            return false;
+        }
+
+        // Her değişiklikten sonra otomatik kaydet
+        function addTeam() {
+            const teamName = prompt("Takım adını girin:");
+            if (teamName && teamName.trim() !== "") {
+                teams.push(teamName.trim());
+                updateTeamsDisplay();
+                updateStandings();
+                autoSave(); // 💾 Otomatik kaydet
+            }
+        }
+
+        function removeTeam(index) {
+            if (confirm(`${teams[index]} takımını silmek istediğinizden emin misiniz?`)) {
+                const teamName = teams[index];
+                teams.splice(index, 1);
+                matches = matches.filter(match => 
+                    match.team1 !== teamName && match.team2 !== teamName
+                );
+                updateTeamsDisplay();
+                updateMatchesDisplay();
+                updateStandings();
+                autoSave(); // 💾 Otomatik kaydet
+            }
+        }
+
+        function updateTeamName(index, newName) {
+            if (newName && newName.trim() !== "") {
+                const oldName = teams[index];
+                teams[index] = newName.trim();
+                matches.forEach(match => {
+                    if (match.team1 === oldName) match.team1 = newName.trim();
+                    if (match.team2 === oldName) match.team2 = newName.trim();
+                });
+                updateMatchesDisplay();
+                updateStandings();
+                autoSave(); // 💾 Otomatik kaydet
+            }
+        }
+
+        function updateTeamsDisplay() {
+            const container = document.getElementById('teamsContainer');
+            container.innerHTML = '';
+            
+            teams.forEach((team, index) => {
+                const div = document.createElement('div');
+                div.className = 'team-input';
+                div.innerHTML = `
+                    <input type="text" value="${team}" 
+                           onchange="updateTeamName(${index}, this.value)">
+                    <button class="btn danger" onclick="removeTeam(${index})" style="padding: 10px; flex: none;">🗑️</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function addMatch() {
+            if (teams.length < 2) {
+                alert("En az 2 takım olmalı!");
+                return;
+            }
+            
+            matches.push({
+                team1: teams[0],
+                team2: teams[1],
+                score1: 0,
+                score2: 0,
+                week: 1
+            });
+            updateMatchesDisplay();
+            updateStandings();
+        }
+
+        function removeMatch(index) {
+            matches.splice(index, 1);
+            updateMatchesDisplay();
+            updateStandings();
+        }
+
+        function updateMatch(index, field, value) {
+            matches[index][field] = field.includes('score') || field === 'week' ? parseInt(value) || 0 : value;
+            updateStandings();
+        }
+
+        function updateMatchesDisplay() {
+            const container = document.getElementById('matchesContainer');
+            container.innerHTML = '';
+            
+            matches.forEach((match, index) => {
+                const div = document.createElement('div');
+                div.className = 'match-input';
+                div.innerHTML = `
+                    <input type="number" value="${match.week}" min="1" placeholder="Hafta"
+                           onchange="updateMatch(${index}, 'week', this.value)" style="width: 60px; flex: none;">
+                    <select onchange="updateMatch(${index}, 'team1', this.value)">
+                        ${teams.map(team => 
+                            `<option value="${team}" ${team === match.team1 ? 'selected' : ''}>${team}</option>`
+                        ).join('')}
+                    </select>
+                    <input type="number" value="${match.score1}" min="0" 
+                           onchange="updateMatch(${index}, 'score1', this.value)">
+                    <span>-</span>
+                    <input type="number" value="${match.score2}" min="0" 
+                           onchange="updateMatch(${index}, 'score2', this.value)">
+                    <select onchange="updateMatch(${index}, 'team2', this.value)">
+                        ${teams.map(team => 
+                            `<option value="${team}" ${team === match.team2 ? 'selected' : ''}>${team}</option>`
+                        ).join('')}
+                    </select>
+                    <button class="btn danger" onclick="removeMatch(${index})" style="padding: 10px; flex: none;">🗑️</button>
+                `;
+                container.appendChild(div);
+            });
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const totalMatches = matches.length;
+            const totalGoals = matches.reduce((sum, match) => sum + match.score1 + match.score2, 0);
+            const avgGoals = totalMatches > 0 ? (totalGoals / totalMatches).toFixed(1) : 0;
+            const maxWeek = matches.length > 0 ? Math.max(...matches.map(m => m.week)) : 0;
+
+            document.getElementById('statsContainer').innerHTML = `
+                <div class="stat-box">
+                    <div class="stat-value">${totalMatches}</div>
+                    <div class="stat-label">Toplam Maç</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${totalGoals}</div>
+                    <div class="stat-label">Toplam Gol</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${avgGoals}</div>
+                    <div class="stat-label">Maç Başı Gol</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${maxWeek}</div>
+                    <div class="stat-label">Son Hafta</div>
+                </div>
+            `;
+        }
+
+        function calculateStandings() {
+            const standings = teams.map(team => ({
+                name: team,
+                played: 0,
+                won: 0,
+                drawn: 0,
+                lost: 0,
+                goalsFor: 0,
+                goalsAgainst: 0,
+                goalDifference: 0,
+                points: 0
+            }));
+
+            matches.forEach(match => {
+                const team1Stats = standings.find(s => s.name === match.team1);
+                const team2Stats = standings.find(s => s.name === match.team2);
+
+                if (team1Stats && team2Stats) {
+                    team1Stats.played++;
+                    team2Stats.played++;
+                    team1Stats.goalsFor += match.score1;
+                    team1Stats.goalsAgainst += match.score2;
+                    team2Stats.goalsFor += match.score2;
+                    team2Stats.goalsAgainst += match.score1;
+
+                    if (match.score1 > match.score2) {
+                        team1Stats.won++;
+                        team1Stats.points += 3;
+                        team2Stats.lost++;
+                    } else if (match.score1 < match.score2) {
+                        team2Stats.won++;
+                        team2Stats.points += 3;
+                        team1Stats.lost++;
+                    } else {
+                        team1Stats.drawn++;
+                        team2Stats.drawn++;
+                        team1Stats.points += 1;
+                        team2Stats.points += 1;
+                    }
                 }
             });
 
-            // Kendi kendine maç (ilk takım ise)
-            if (takimListesi.length === 1) {
-                yeniMaclar.push({
-                    evSahibi: takimAdi,
-                    evSkor: 0,
-                    deplasman: takimAdi,
-                    depSkor: 0
-                });
-            }
+            standings.forEach(team => {
+                team.goalDifference = team.goalsFor - team.goalsAgainst;
+            });
 
-            // Yeni maçları ana listeye ekle
-            fiksturVerileri = fiksturVerileri.concat(yeniMaclar);
-
-            document.getElementById('takimAdi').value = '';
-            tabloyuGuncelle();
-            verileriKaydet();
-            
-            alert('✅ ' + takimAdi + ' takımı eklendi!');
-        }
-
-        // Skor güncelleme fonksiyonu
-        function skorGuncelle(index, tur, deger) {
-            if (tur === 'ev') {
-                fiksturVerileri[index].evSkor = parseInt(deger) || 0;
-            } else {
-                fiksturVerileri[index].depSkor = parseInt(deger) || 0;
-            }
-            verileriKaydet();
-        }
-
-        // Maç silme fonksiyonu
-        function macSil(index) {
-            if (confirm('Bu maçı silmek istediğinizden emin misiniz?')) {
-                fiksturVerileri.splice(index, 1);
-                tabloyuGuncelle();
-                verileriKaydet();
-            }
-        }
-
-        // Tabloyu güncelleme fonksiyonu
-        function tabloyuGuncelle() {
-            const tabloBody = document.getElementById('tabloBody');
-            tabloBody.innerHTML = '';
-
-            if (fiksturVerileri.length === 0) {
-                tabloBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">Henüz maç eklenmemiş</td></tr>';
-                return;
-            }
-
-            fiksturVerileri.forEach(function(mac, index) {
-                const satir = document.createElement('tr');
-                
-                satir.innerHTML = `
-                    <td>${mac.evSahibi || ''}</td>
-                    <td>
-                        <input type="number" class="skor-input" value="${mac.evSkor || 0}" 
-                               onchange="skorGuncelle(${index}, 'ev', this.value)">
-                        - 
-                        <input type="number" class="skor-input" value="${mac.depSkor || 0}" 
-                               onchange="skorGuncelle(${index}, 'dep', this.value)">
-                    </td>
-                    <td>${mac.deplasman || ''}</td>
-                    <td>
-                        <button class="sil-btn" onclick="macSil(${index})">Sil</button>
-                    </td>
-                `;
-                
-                tabloBody.appendChild(satir);
+            return standings.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
+                return b.goalsFor - a.goalsFor;
             });
         }
 
-        // Tüm verileri temizle
-        function verileriTemizle() {
-            if (confirm('TÜM verileri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
-                localStorage.removeItem('mobilLigVerileri');
-                localStorage.removeItem('mobilLigTakimlar');
-                fiksturVerileri = [];
-                takimListesi = [];
-                tabloyuGuncelle();
-                alert('🗑️ Tüm veriler temizlendi!');
+        function updateStandings() {
+            const standings = calculateStandings();
+            const tbody = document.getElementById('standingsBody');
+            tbody.innerHTML = '';
+
+            standings.forEach((team, index) => {
+                const row = tbody.insertRow();
+                const goalDiffStr = team.goalDifference > 0 ? `+${team.goalDifference}` : team.goalDifference.toString();
+
+                row.innerHTML = `
+                    <td class="position">${index + 1}</td>
+                    <td class="team-name">${team.name}</td>
+                    <td>${team.played}</td>
+                    <td>${team.won}</td>
+                    <td>${team.drawn}</td>
+                    <td>${team.lost}</td>
+                    <td>${team.goalsFor}</td>
+                    <td>${team.goalsAgainst}</td>
+                    <td>${goalDiffStr}</td>
+                    <td class="points">${team.points}</td>
+                `;
+            });
+        }
+
+        function clearAll() {
+            if (confirm("Tüm verileri silmek istediğinizden emin misiniz?")) {
+                teams = [];
+                matches = [];
+                updateTeamsDisplay();
+                updateMatchesDisplay();
+                updateStandings();
+                document.querySelector('.export-section').style.display = 'none';
             }
         }
 
-        // Her değişiklikte otomatik kaydet
-        window.addEventListener('beforeunload', verileriKaydet);
+        function exportToCSV() {
+            const leagueName = document.getElementById('leagueName').value || 'Lig';
+            let csvContent = `${leagueName} - Puan Durumu\n\n`;
+            csvContent += "Sıra,Takım,O,G,B,M,A,Y,Av,P\n";
+            
+            const standings = calculateStandings();
+            standings.forEach((team, index) => {
+                const goalDiffStr = team.goalDifference > 0 ? `+${team.goalDifference}` : team.goalDifference.toString();
+                csvContent += `${index + 1},"${team.name}",${team.played},${team.won},${team.drawn},${team.lost},${team.goalsFor},${team.goalsAgainst},"${goalDiffStr}",${team.points}\n`;
+            });
+
+            csvContent += "\n\nMaç Sonuçları:\n";
+            csvContent += "Hafta,Ev Sahibi,Deplasman,Skor\n";
+            matches.forEach(match => {
+                csvContent += `${match.week},"${match.team1}","${match.team2}","${match.score1}-${match.score2}"\n`;
+            });
+
+            document.getElementById('csvOutput').textContent = csvContent;
+            document.querySelector('.export-section').style.display = 'block';
+        }
+
+        // Başlangıç
+        window.onload = function() {
+            updateTeamsDisplay();
+            updateStandings();
+        };
     </script>
 </body>
 </html>
